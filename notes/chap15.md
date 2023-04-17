@@ -195,34 +195,35 @@
 - 特殊情况：基类虚函数重载，派生类只覆盖一个版本的虚函数，会隐藏基类中其他重载版本的虚函数，<span id="using">使用`using`声明</span>，[参考](https://blog.csdn.net/sinat_41619762/article/details/108176052)
 
   ```c++
-  class Base {
-      public:
-      	// 基类有多个重载的虚函数（同名不同参）
-          virtual int func() {return 0;}
-          virtual int func(int i) {return 1;}
-  };
-  class D : public Base {
-      public:
-      	// 如果派生类希望基类中虚函数的所有重载版本都可见，就需要覆盖每一个虚函数的重载版本，烦琐
-          int func() { return 2; }
-  };
-  class E: public Base{
-      public:
-      	using Base::func; // 使用using声明，将基类func的所有重载版本都添加到派生类的作用域中，func可以不是虚函数
-  	    int func() { return 3; }
-  }
-  
-  int main(){
-      D d, *pd = &d; // 静态类型与动态类型都是D
-      E e, *pe = &e; // 静态类型与动态类型都是E
-      Base *BasePd = &d, *BasePe = &e; // 静态类型与动态类型是不同
-      
-      cout<<pd->func()<<endl;
-      cout<<pd->func(1)<<endl; // 报错，该派生类中只覆盖了int func()版本的虚函数，int func(int)重载版本就被隐藏了
-      
-      cout<<BasePd->func()<<" "<<BasePd->func(1)<<endl; // 输出：2 1，进行了动态绑定
-      cout<<BasePe->func()<<" "<<BasePe->func(1)<<endl; // 输出：3 1，动态绑定+using声明	
-  }
+    class Base {
+        public:
+            // 基类有多个重载的虚函数（同名不同参）
+            virtual int func() {return 0;}
+            virtual int func(int i) {return 1;}
+    };
+    class D : public Base {
+        public:
+            // 如果派生类希望基类中虚函数的所有重载版本都可见，就需要覆盖每一个虚函数的重载版本，烦琐
+            int func() { return 2; }
+    };
+    class E: public Base{
+        public:
+            using Base::func; 
+            // 使用using声明，将基类func的所有重载版本都添加到派生类的作用域中，func可以不是虚函数
+            int func() { return 3; }
+    }
+
+    int main(){
+        D d, *pd = &d; // 静态类型与动态类型都是D
+        E e, *pe = &e; // 静态类型与动态类型都是E
+        Base *BasePd = &d, *BasePe = &e; // 静态类型与动态类型是不同
+        
+        cout<<pd->func()<<endl;
+        cout<<pd->func(1)<<endl; // 报错，该派生类中只覆盖了int func()版本的虚函数，int func(int)重载版本就被隐藏了
+        
+        cout<<BasePd->func()<<" "<<BasePd->func(1)<<endl; // 输出：2 1，进行了动态绑定
+        cout<<BasePe->func()<<" "<<BasePe->func(1)<<endl; // 输出：3 1，动态绑定+using声明	
+    }
   ```
 
 ## 友元
@@ -253,35 +254,35 @@
 - 例子
 
   ```c++
-  class Base{
-  	friend class Pal;
-  	protected:
-  		int protected_val; // protected_val访问权限由Base控制（即使Base是内嵌在派生类对象中）
-  	private:
-  		int private_val;		
-  };
-  class Derived: public Base{
-  	friend class DPal;
-  	protected:
-  		int derived_protected_val;
-  };
-  class Pal{ // 基类的友元
-  	public:
-  		int f(Derived d) {return d.protected_val;} 
-  		int g(Derived d) {return d.derived_protected_val;} // error: 基类的友元不能随便访问派生类的成员
-  	protected:
-  		int Pal_id;		
-  };
-  class PPal: public Pal{ // 基类的友元的派生类
-  	public:
-  		int k(Derived d) {return d.protected_val;} // error：友元关系不能继承
-  		int s(Base b) {return b.protected_val;} // error：友元关系不能继承
-  		void show() {cout<<Pal_id<<endl;} // 友元关系只对做出声明的类有效
-  };
-  class DPal{ // 派生类的友元
-  	public:
-  		int h(Derived d) {return d.protected_val;}
-  };
+    class Base{
+        friend class Pal;
+        protected:
+            int protected_val; // protected_val访问权限由Base控制（即使Base是内嵌在派生类对象中）
+        private:
+            int private_val;		
+    };
+    class Derived: public Base{
+        friend class DPal;
+        protected:
+            int derived_protected_val;
+    };
+    class Pal{ // 基类的友元
+        public:
+            int f(Derived d) {return d.protected_val;} 
+            int g(Derived d) {return d.derived_protected_val;} // error: 基类的友元不能随便访问派生类的成员
+        protected:
+            int Pal_id;		
+    };
+    class PPal: public Pal{ // 基类的友元的派生类
+        public:
+            int k(Derived d) {return d.protected_val;} // error：友元关系不能继承
+            int s(Base b) {return b.protected_val;} // error：友元关系不能继承
+            void show() {cout<<Pal_id<<endl;} // 友元关系只对做出声明的类有效
+    };
+    class DPal{ // 派生类的友元
+        public:
+            int h(Derived d) {return d.protected_val;}
+    };
   ```
 
 # 拷贝控制
@@ -318,34 +319,34 @@
 - 例子
 
   ```c++
-  class Base{
-  	public:
-  		Base() =default;
-  		Base(const Base& b) =default;
-  		Base(Base&& b) =default;
-  		Base(int i): val(i) {}
-  		Base(char c): val(c) {}
-  		Base(string str) {}
-  		Base(double d, int i=1): val(d) {} // 带有一个默认实参的构造函数
-  	protected:
-  		int val;
-  };
-  class Derived: public Base{
-  	public:
-  		using Base::Base;
-  		Derived(string str): Base(str[0]) {}
-  		/*
-  		// 相当于对基类的每个构造函数，在派生类中生成一个形参列表完全相同的构造函数
-  		// 生成的构造函数形如：Derived(params): Base(args) {}，其中Derived是派生类类名，Base是基类类名
-  		Derived(int i): Base(i) {}
-  		Derived(char c): Base(c) {}
-  		Derived(double d, int i): Base(d) {} // do something for i // 这两个构造函数是由带默认实参的构造函数产生
-  		Derived(double d): Base(d) {} // do something for i = 1 // 一个版本没有默认实参，另一个版本将默认实参固定i=1（相当于少了一个参数）
-  		// 没有继承默认、拷贝、移动构造函数
-  		// 没有生成: Derived(string str): Base(str) {}
-  		*/
-  		void show() {cout<<val<<endl;}
-  };
+    class Base{
+        public:
+            Base() =default;
+            Base(const Base& b) =default;
+            Base(Base&& b) =default;
+            Base(int i): val(i) {}
+            Base(char c): val(c) {}
+            Base(string str) {}
+            Base(double d, int i=1): val(d) {} // 带有一个默认实参的构造函数
+        protected:
+            int val;
+    };
+    class Derived: public Base{
+        public:
+            using Base::Base;
+            Derived(string str): Base(str[0]) {}
+            /*
+            // 相当于对基类的每个构造函数，在派生类中生成一个形参列表完全相同的构造函数
+            // 生成的构造函数形如：Derived(params): Base(args) {}，其中Derived是派生类类名，Base是基类类名
+            Derived(int i): Base(i) {}
+            Derived(char c): Base(c) {}
+            Derived(double d, int i): Base(d) {} // do something for i // 这两个构造函数是由带默认实参的构造函数产生
+            Derived(double d): Base(d) {} // do something for i = 1 // 一个版本没有默认实参，另一个版本将默认实参固定i=1（相当于少了一个参数）
+            // 没有继承默认、拷贝、移动构造函数
+            // 没有生成: Derived(string str): Base(str) {}
+            */
+            void show() {cout<<val<<endl;}
+    };
   ```
 
 ## 合成拷贝控制的继承
@@ -378,33 +379,33 @@
 - 例子
 
   ```c++
-  class Base{
-  	public:
-      	Base() {func();}
-  	    Base(const Base&) =default;	
-      	Base(Base&&) =default;
-  	    Base& operator= (const Base&) =default;
-      	Base& operator= (Base&&) =default;
-  	    virtual ~Base() =default;
-      	virtual void func() {cout<<"Base"<<endl;}
-  };
-  class Derived: public Base{
-      public:
-      	Derived(): Base() {func();} 
-  	    Derived(const Derived& d): Base(d) {/*init Derived part*/} // 使用基类的构造函数初始化派生类的基类部分
-      	Derived(const Derived& d, bool test) {} // 使用Base::Base()进行基类部分的初始化，通常不这么做
-      	Derived(Derived&& d): Base(std::move(d)) {/*move Derived part*/}
-  	    Derived& operator= (const Derived& d){
-      	    Base::operator=(d); // 使用基类的赋值运算符为派生类的基类部分赋值
-          	/* do something*/
-  	        return *this;
-      	}
-  	    ~Derived() {/*销毁派生类自己分配的资源*/}
-      	virtual void func() {cout<<"Derived"<<endl;}
-  };
-  
-  Derived d; // 在构造基类部分时，派生类部分还未被完全创建，此时将对象d当作一个基类对象，基类构造函数中func绑定的是Base的func
-  // 输出：Base Derived
+    class Base{
+        public:
+            Base() {func();}
+            Base(const Base&) =default;	
+            Base(Base&&) =default;
+            Base& operator= (const Base&) =default;
+            Base& operator= (Base&&) =default;
+            virtual ~Base() =default;
+            virtual void func() {cout<<"Base"<<endl;}
+    };
+    class Derived: public Base{
+        public:
+            Derived(): Base() {func();} 
+            Derived(const Derived& d): Base(d) {/*init Derived part*/} // 使用基类的构造函数初始化派生类的基类部分
+            Derived(const Derived& d, bool test) {} // 使用Base::Base()进行基类部分的初始化，通常不这么做
+            Derived(Derived&& d): Base(std::move(d)) {/*move Derived part*/}
+            Derived& operator= (const Derived& d){
+                Base::operator=(d); // 使用基类的赋值运算符为派生类的基类部分赋值
+                /* do something*/
+                return *this;
+            }
+            ~Derived() {/*销毁派生类自己分配的资源*/}
+            virtual void func() {cout<<"Derived"<<endl;}
+    };
+
+    Derived d; // 在构造基类部分时，派生类部分还未被完全创建，此时将对象d当作一个基类对象，基类构造函数中func绑定的是Base的func
+    // 输出：Base Derived
   ```
 
 # 实践与经验
