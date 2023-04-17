@@ -31,7 +31,7 @@
 - 第 III 部分 : 类设计者的工具
   - 第13章 : 拷贝控制   [笔记](./notes/ch13.md)  [练习](./excersize/ch13.md)
   - 第14章 : 重载与类型转换  [笔记](./notes/ch14.md)  [练习](./excersize/ch14.md)
-  - 第15章 : 面向对象程序设计  [笔记](./notes/ch15.md)  [练习](./excersize/ch15.md)
+  - 第15章 : 面向对象程序设计  [内容整理](./notes/chap15.md) [笔记](./notes/ch15.md)  [练习](./excersize/ch15.md)
   - 第16章 : 模版与泛型编程  [笔记](./notes/ch16.md)  [练习](./excersize/ch16.md)
 - 第 IV 部分 : 高级主题
   - 第17章 : 标准库与特殊设施  [笔记](./notes/ch17.md)  [练习](./excersize/ch17.md)
